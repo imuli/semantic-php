@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"flag"
 	"github.com/imuli/go-semantic/api"
 	"github.com/imuli/go-semantic/ast"
@@ -15,12 +16,15 @@ import (
 	"github.com/z7zmey/php-parser/php7"
 	"github.com/z7zmey/php-parser/position"
 	"io"
+	"os"
 )
 
 var php int
+var debug bool
 
 func init() {
 	flag.IntVar(&php, "php", 7, "parse using php `version` (5 or 7)")
+	flag.BoolVar(&debug, "debug", false, "log extra parse info to stderr")
 }
 
 func newParser(source io.Reader, name string) parser.Parser {
@@ -187,6 +191,7 @@ func (c *convert) toNode(n node.Node) *ast.Node {
 		contained = v.Stmts
 
 	default:
+		fmt.Fprintf(os.Stderr, "%T\n", v);
 		return nil
 	}
 
