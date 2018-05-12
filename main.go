@@ -8,6 +8,7 @@ import (
 	"github.com/imuli/go-semantic/api"
 	"github.com/imuli/go-semantic/ast"
 	"github.com/z7zmey/php-parser/node"
+	"github.com/z7zmey/php-parser/node/expr/assign"
 	"github.com/z7zmey/php-parser/node/expr"
 	"github.com/z7zmey/php-parser/node/name"
 	"github.com/z7zmey/php-parser/node/stmt"
@@ -90,6 +91,12 @@ func (c *convert) getNameList(ns []node.Node) string {
 
 func (c *convert) getName(n node.Node) string {
 	switch v := n.(type) {
+	case *expr.ArrayDimFetch:
+		return c.getContent(n)
+
+	case *assign.Assign:
+		return c.getName(v.Variable)
+
 	case *stmt.Class:
 		return c.getName(v.ClassName)
 
@@ -99,8 +106,17 @@ func (c *convert) getName(n node.Node) string {
 	case *stmt.Function:
 		return c.getName(v.FunctionName)
 
+	case *stmt.For:
+		return "" // FIXME concatinate v.Init v.Cond and v.Loop ???
+
+	case *stmt.Foreach:
+		return c.getContent(v.Variable)
+
 	case *expr.FunctionCall:
 		return c.getName(v.Function)
+
+	case *expr.MethodCall:
+		return c.getName(v.Method)
 
 	case *stmt.Global:
 		return c.getNameList(v.Vars)
@@ -129,6 +145,9 @@ func (c *convert) getName(n node.Node) string {
 	case *expr.RequireOnce:
 		return c.getContent(v.Expr)
 
+	case *stmt.Unset:
+		return c.getNameList(v.Vars)
+
 	case *expr.Variable:
 		return c.getName(v.VarName)
 
@@ -146,6 +165,9 @@ func (c *convert) toNode(n node.Node) *ast.Node {
 	contained := []node.Node{} // containers set this for recursion
 
 	switch v := n.(type) {
+	case *assign.Assign:
+		r.Kind = "assign"
+
 	case *stmt.Class:
 		r.Kind = "class"
 		contained = v.Stmts
@@ -162,11 +184,17 @@ func (c *convert) toNode(n node.Node) *ast.Node {
 	case *expr.ErrorSuppress:
 		r = c.toNode(v.Expr)
 
+	case *stmt.Foreach:
+		r.Kind = "foreach"
+
+	case *stmt.For:
+		r.Kind = "for"
+
 	case *stmt.Function:
 		r.Kind = "function"
 
 	case *expr.FunctionCall:
-		r.Kind = "call"
+		r.Kind = "call_function"
 
 	case *stmt.If:
 		r.Kind = "if"
@@ -176,6 +204,9 @@ func (c *convert) toNode(n node.Node) *ast.Node {
 
 	case *stmt.InlineHtml:
 		r.Kind = "inline_text"
+
+	case *expr.MethodCall:
+		r.Kind = "call_method"
 
 	case *stmt.PropertyList:
 		r.Kind = "properties"
@@ -189,6 +220,9 @@ func (c *convert) toNode(n node.Node) *ast.Node {
 	case *stmt.StmtList:
 		r.Kind = "statement_list"
 		contained = v.Stmts
+
+	case *stmt.Unset:
+		r.Kind = "unset"
 
 	default:
 		fmt.Fprintf(os.Stderr, "%T\n", v);
