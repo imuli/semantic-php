@@ -250,7 +250,7 @@ func (c *convert) toNode(n node.Node) *ast.Node {
 	return r
 }
 
-func (c *convert) toFile(root node.Node) ast.File {
+func (c *convert) toFile(root node.Node) *ast.File {
 	v := root.(*stmt.StmtList)
 
 	children := []ast.Node{}
@@ -261,7 +261,7 @@ func (c *convert) toFile(root node.Node) ast.File {
 		}
 	}
 
-	return ast.File{
+	return &ast.File{
 		Kind:     "file",
 		Children: children,
 	}
@@ -281,9 +281,29 @@ func Parse(source io.Reader, name string) (ast.File, error) {
 
 	file := c.toFile(tree)
 	file.Name = name
-	file = *ast.CleanFile(&file, ast.MakeLines(c.buf.Bytes()))
 
-	return file, nil
+	lines := ast.MakeLines(c.buf.Bytes())
+
+	parseErrors := parse.GetErrors()
+	file.ParsingErrorsDetected = len(parseErrors) > 0
+	// we can only use the first parsing error...
+	if file.ParsingErrorsDetected {
+		file.ParsingError = &ast.ParsingError{
+			Location: [2]int{
+				parseErrors[0].Pos.StartLine,
+				parseErrors[0].Pos.StartPos - lines[parseErrors[0].Pos.StartLine],
+			},
+			Message: parseErrors[0].Msg,
+		}
+	}
+
+	file = ast.CleanFile(file, lines)
+
+	if file == nil {
+		return ast.File{}, errors.New("something didn't clean up properly")
+	}
+
+	return *file, nil
 }
 
 func main() {
