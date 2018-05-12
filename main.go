@@ -100,8 +100,17 @@ func (c *convert) getName(n node.Node) string {
 	case *stmt.Class:
 		return c.getName(v.ClassName)
 
+	case *stmt.ClassConstList:
+		return c.getNameList(v.Consts)
+
 	case *stmt.ClassMethod:
 		return c.getName(v.MethodName)
+
+	case *stmt.ConstList:
+		return c.getNameList(v.Consts)
+
+	case *stmt.Constant:
+		return c.getName(v.ConstantName)
 
 	case *stmt.Function:
 		return c.getName(v.FunctionName)
@@ -133,6 +142,9 @@ func (c *convert) getName(n node.Node) string {
 	case *name.NamePart:
 		return v.Value;
 
+	case *stmt.Namespace:
+		return c.getContent(v.NamespaceName);
+
 	case *stmt.Property:
 		return c.getName(v.Variable)
 
@@ -147,6 +159,12 @@ func (c *convert) getName(n node.Node) string {
 
 	case *stmt.Unset:
 		return c.getNameList(v.Vars)
+
+	case *stmt.Use:
+		return c.getContent(v.Use)
+
+	case *stmt.UseList:
+		return c.getNameList(v.Uses)
 
 	case *expr.Variable:
 		return c.getName(v.VarName)
@@ -172,8 +190,14 @@ func (c *convert) toNode(n node.Node) *ast.Node {
 		r.Kind = "class"
 		contained = v.Stmts
 
+	case *stmt.ClassConstList:
+		r.Kind = "constant"
+
 	case *stmt.ClassMethod:
 		r.Kind = "method"
+
+	case *stmt.ConstList:
+		r.Kind = "constant"
 
 	case *stmt.Expression:
 		r = c.toNode(v.Expr)
@@ -208,6 +232,9 @@ func (c *convert) toNode(n node.Node) *ast.Node {
 	case *expr.MethodCall:
 		r.Kind = "call_method"
 
+	case *stmt.Namespace:
+		r.Kind = "namespace"
+
 	case *stmt.PropertyList:
 		r.Kind = "properties"
 
@@ -223,6 +250,9 @@ func (c *convert) toNode(n node.Node) *ast.Node {
 
 	case *stmt.Unset:
 		r.Kind = "unset"
+
+	case *stmt.UseList:
+		r.Kind = "use"
 
 	default:
 		fmt.Fprintf(os.Stderr, "%T\n", v);
