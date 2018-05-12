@@ -1,0 +1,2 @@
+# SemanticMerge parser for PHP
+
