@@ -47,7 +47,7 @@ type convert struct {
 
 func (c *convert) toSpan(n node.Node) *[2]int {
 	pos := c.pos[n]
-	return &[2]int{pos.StartPos - 1, pos.EndPos}
+	return &[2]int{pos.StartPos - 1, pos.EndPos - 1}
 }
 
 func (c *convert) getContent(n node.Node) string {
