@@ -8,6 +8,7 @@ import (
 	"github.com/imuli/go-semantic/ast"
 	"github.com/z7zmey/php-parser/node"
 	"github.com/z7zmey/php-parser/node/expr"
+	"github.com/z7zmey/php-parser/node/name"
 	"github.com/z7zmey/php-parser/node/stmt"
 	"github.com/z7zmey/php-parser/parser"
 	"github.com/z7zmey/php-parser/php5"
@@ -94,11 +95,23 @@ func (c *convert) getName(n node.Node) string {
 	case *stmt.Function:
 		return c.getName(v.FunctionName)
 
+	case *expr.FunctionCall:
+		return c.getName(v.Function)
+
 	case *stmt.Global:
 		return c.getNameList(v.Vars)
 
+	case *stmt.If:
+		return c.getContent(v.Cond)
+
 	case *node.Identifier:
 		return v.Value
+
+	case *name.Name:
+		return c.getNameList(v.Parts);
+
+	case *name.NamePart:
+		return v.Value;
 
 	case *stmt.Property:
 		return c.getName(v.Variable)
@@ -122,7 +135,7 @@ func (c *convert) getName(n node.Node) string {
 
 func (c *convert) toNode(n node.Node) *ast.Node {
 
-	r := ast.Node{
+	r := &ast.Node{
 		Span: c.toSpan(n),
 		Name: c.getName(n),
 	}
@@ -137,18 +150,28 @@ func (c *convert) toNode(n node.Node) *ast.Node {
 		r.Kind = "method"
 
 	case *stmt.Expression:
-		expr := c.toNode(v.Expr)
-		if expr == nil {
-			return nil
-		}
-		expr.Span = r.Span
-		r = *expr
+		r = c.toNode(v.Expr)
+
+	case *stmt.Echo:
+		r.Kind = "echo"
+
+	case *expr.ErrorSuppress:
+		r = c.toNode(v.Expr)
 
 	case *stmt.Function:
 		r.Kind = "function"
 
+	case *expr.FunctionCall:
+		r.Kind = "call"
+
+	case *stmt.If:
+		r.Kind = "if"
+
 	case *stmt.Global:
 		r.Kind = "global"
+
+	case *stmt.InlineHtml:
+		r.Kind = "inline_text"
 
 	case *stmt.PropertyList:
 		r.Kind = "properties"
@@ -167,6 +190,10 @@ func (c *convert) toNode(n node.Node) *ast.Node {
 		return nil
 	}
 
+	if r == nil {
+		return nil
+	}
+
 	for _, stmt := range contained {
 		t := c.toNode(stmt)
 		if t != nil {
@@ -181,7 +208,7 @@ func (c *convert) toNode(n node.Node) *ast.Node {
 		r.FooterSpan = &[2]int{c.seek('}', r.Span[1], r.Children[len(r.Children)-1].Span[1]+1), r.Span[1]}
 	}
 
-	return &r
+	return r
 }
 
 func (c *convert) toFile(root node.Node) ast.File {
