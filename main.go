@@ -255,7 +255,9 @@ func (c *convert) toNode(n node.Node) *ast.Node {
 		r.Kind = "use"
 
 	default:
-		fmt.Fprintf(os.Stderr, "%T\n", v);
+		if debug {
+			fmt.Fprintf(os.Stderr, "%T\n", v);
+		}
 		return nil
 	}
 
