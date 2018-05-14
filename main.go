@@ -16,6 +16,7 @@ import (
 	"github.com/z7zmey/php-parser/php5"
 	"github.com/z7zmey/php-parser/php7"
 	"github.com/z7zmey/php-parser/position"
+	"golang.org/x/text/encoding"
 	"io"
 	"os"
 )
@@ -43,6 +44,7 @@ type convert struct {
 	buf   bytes.Buffer
 	pos   position.Positions
 	lines []int // offsets of lines
+	decoder *encoding.Decoder
 }
 
 func (c *convert) toSpan(n node.Node) *[2]int {
@@ -50,9 +52,17 @@ func (c *convert) toSpan(n node.Node) *[2]int {
 	return &[2]int{pos.StartPos - 1, pos.EndPos - 1}
 }
 
+func (c *convert) decode(str string) string {
+	utf, err := c.decoder.String(str)
+	if err != nil {
+		return str
+	}
+	return utf
+}
+
 func (c *convert) getContent(n node.Node) string {
 	pos := c.pos[n]
-	return c.buf.String()[pos.StartPos-1 : pos.EndPos]
+	return c.decode(c.buf.String()[pos.StartPos-1 : pos.EndPos])
 }
 
 func (c *convert) seek(it byte, start, stop int) int {
@@ -134,13 +144,13 @@ func (c *convert) getName(n node.Node) string {
 		return c.getContent(v.Cond)
 
 	case *node.Identifier:
-		return v.Value
+		return c.decode(v.Value)
 
 	case *name.Name:
 		return c.getNameList(v.Parts)
 
 	case *name.NamePart:
-		return v.Value
+		return c.decode(v.Value)
 
 	case *stmt.Namespace:
 		return c.getContent(v.NamespaceName)
@@ -299,8 +309,9 @@ func (c *convert) toFile(root node.Node) *ast.File {
 	}
 }
 
-func Parse(source io.Reader, name string) (ast.File, error) {
+func Parse(source io.Reader, name string, code encoding.Encoding) (ast.File, error) {
 	c := convert{}
+	c.decoder = code.NewDecoder()
 	tee := io.TeeReader(source, &c.buf)
 	parse := newParser(tee, name)
 	if parse == nil {
