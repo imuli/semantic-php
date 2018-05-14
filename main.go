@@ -3,13 +3,13 @@ package main
 import (
 	"bytes"
 	"errors"
-	"fmt"
 	"flag"
+	"fmt"
 	"github.com/imuli/go-semantic/api"
 	"github.com/imuli/go-semantic/ast"
 	"github.com/z7zmey/php-parser/node"
-	"github.com/z7zmey/php-parser/node/expr/assign"
 	"github.com/z7zmey/php-parser/node/expr"
+	"github.com/z7zmey/php-parser/node/expr/assign"
 	"github.com/z7zmey/php-parser/node/name"
 	"github.com/z7zmey/php-parser/node/stmt"
 	"github.com/z7zmey/php-parser/parser"
@@ -52,7 +52,7 @@ func (c *convert) toSpan(n node.Node) *[2]int {
 
 func (c *convert) getContent(n node.Node) string {
 	pos := c.pos[n]
-	return c.buf.String()[pos.StartPos-1:pos.EndPos]
+	return c.buf.String()[pos.StartPos-1 : pos.EndPos]
 }
 
 func (c *convert) seek(it byte, start, stop int) int {
@@ -137,13 +137,13 @@ func (c *convert) getName(n node.Node) string {
 		return v.Value
 
 	case *name.Name:
-		return c.getNameList(v.Parts);
+		return c.getNameList(v.Parts)
 
 	case *name.NamePart:
-		return v.Value;
+		return v.Value
 
 	case *stmt.Namespace:
-		return c.getContent(v.NamespaceName);
+		return c.getContent(v.NamespaceName)
 
 	case *stmt.Property:
 		return c.getName(v.Variable)
@@ -256,7 +256,7 @@ func (c *convert) toNode(n node.Node) *ast.Node {
 
 	default:
 		if debug {
-			fmt.Fprintf(os.Stderr, "%T\n", v);
+			fmt.Fprintf(os.Stderr, "%T\n", v)
 		}
 		return nil
 	}
