@@ -42,9 +42,9 @@ func newParser(source io.Reader, name string) parser.Parser {
 }
 
 type convert struct {
-	buf   bytes.Buffer
-	pos   position.Positions
-	lines []int // offsets of lines
+	buf     bytes.Buffer
+	pos     position.Positions
+	lines   []int // offsets of lines
 	decoder *encoding.Decoder
 }
 

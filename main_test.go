@@ -22,8 +22,8 @@ func parseEncoding(t *testing.T, source string, code encoding.Encoding) ast.File
 	if file.Name != "testing" {
 		t.Errorf("name was '%s' instead of 'testing'", file.Name)
 	}
-	if file.FooterSpan[1] + 1 != len(source) {
-		t.Errorf("file length was %d instead of %d", len(source), file.FooterSpan[1] + 1)
+	if file.FooterSpan[1]+1 != len(source) {
+		t.Errorf("file length was %d instead of %d", len(source), file.FooterSpan[1]+1)
 	}
 	return file
 }
@@ -34,15 +34,15 @@ func parse(t *testing.T, source string) ast.File {
 
 func getSpan(source string, span *[2]int) string {
 	if span != nil {
-		return source[span[0]:span[1]+1];
+		return source[span[0] : span[1]+1]
 	} else {
 		return ""
 	}
 }
 
-func testNodeContinuity(t *testing.T, prefix string, n ast.Node, pos int){
+func testNodeContinuity(t *testing.T, prefix string, n ast.Node, pos int) {
 	if n.HeaderSpan != nil {
-		if pos + 1 != n.HeaderSpan[0] {
+		if pos+1 != n.HeaderSpan[0] {
 			t.Errorf("gap before %s.Header", prefix)
 		}
 		pos = n.HeaderSpan[1]
@@ -50,29 +50,29 @@ func testNodeContinuity(t *testing.T, prefix string, n ast.Node, pos int){
 	for i, child := range n.Children {
 		childPrefix := fmt.Sprintf("%s.Children[%d]", prefix, i)
 		testNodeContinuity(t, childPrefix, child, pos)
-		if pos + 1 != child.Span[0] {
+		if pos+1 != child.Span[0] {
 			t.Errorf("gap before %s.Children[%d]", prefix, i)
 		}
 		pos = child.Span[1]
 	}
 	if n.HeaderSpan != nil {
-		if pos + 1 != n.FooterSpan[0] {
+		if pos+1 != n.FooterSpan[0] {
 			t.Errorf("gap before %s.Footer", prefix)
 		}
 	}
 }
 
-func testFileContinuity(t *testing.T, prefix string, n ast.File){
+func testFileContinuity(t *testing.T, prefix string, n ast.File) {
 	pos := -1
 	for i, child := range n.Children {
 		childPrefix := fmt.Sprintf("%s.Children[%d]", prefix, i)
 		testNodeContinuity(t, childPrefix, child, pos)
-		if pos + 1 != child.Span[0] {
+		if pos+1 != child.Span[0] {
 			t.Errorf("gap before %s.Children[%d]", prefix, i)
 		}
 		pos = child.Span[1]
 	}
-	if pos + 1 != n.FooterSpan[0] {
+	if pos+1 != n.FooterSpan[0] {
 		t.Errorf("gap before %s.Footer", prefix)
 	}
 }
@@ -81,7 +81,7 @@ func equalSpan(a *[2]int, b *[2]int) bool {
 	return a == b || (a != nil && b != nil && *a == *b)
 }
 
-func testNodeEquality(t *testing.T, prefix string, left ast.Node, right ast.Node){
+func testNodeEquality(t *testing.T, prefix string, left ast.Node, right ast.Node) {
 	if left.Kind != right.Kind {
 		t.Errorf("%s.Kind '%s' != '%s'", prefix, left.Kind, right.Kind)
 	}
@@ -103,13 +103,13 @@ func testNodeEquality(t *testing.T, prefix string, left ast.Node, right ast.Node
 	if len(left.Children) != len(right.Children) {
 		t.Errorf("%s.len(Children) %v != %v", prefix, len(left.Children), len(right.Children))
 	}
-	for i:= 0; i < len(left.Children) && i < len(right.Children); i++ {
+	for i := 0; i < len(left.Children) && i < len(right.Children); i++ {
 		childPrefix := fmt.Sprintf("%s.Children[%d]", prefix, i)
 		testNodeEquality(t, childPrefix, left.Children[i], right.Children[i])
 	}
 }
 
-func testFileEquality(t *testing.T, prefix string, left ast.File, right ast.File){
+func testFileEquality(t *testing.T, prefix string, left ast.File, right ast.File) {
 	if left.Kind != right.Kind {
 		t.Errorf("%s.Kind '%s' != '%s'", prefix, left.Kind, right.Kind)
 	}
@@ -129,7 +129,7 @@ func testFileEquality(t *testing.T, prefix string, left ast.File, right ast.File
 	if len(left.Children) != len(right.Children) {
 		t.Errorf("%s.len(Children) %v != %v", prefix, len(left.Children), len(right.Children))
 	}
-	for i:= 0; i < len(left.Children) && i < len(right.Children); i++ {
+	for i := 0; i < len(left.Children) && i < len(right.Children); i++ {
 		childPrefix := fmt.Sprintf("%s.Children[%d]", prefix, i)
 		testNodeEquality(t, childPrefix, left.Children[i], right.Children[i])
 	}
@@ -137,7 +137,7 @@ func testFileEquality(t *testing.T, prefix string, left ast.File, right ast.File
 
 // Tests start here
 
-func TestSnippets(t *testing.T){
+func TestSnippets(t *testing.T) {
 	files, _ := filepath.Glob("snippets/*.php")
 	for _, file := range files {
 		src, _ := os.Open(file)
@@ -162,10 +162,9 @@ func TestSnippets(t *testing.T){
 	}
 }
 
-func TestEmpty(t *testing.T){
+func TestEmpty(t *testing.T) {
 	file := parse(t, "")
 	if len(file.Children) != 0 {
 		t.Errorf("empty file with %d children", len(file.Children))
 	}
 }
-
