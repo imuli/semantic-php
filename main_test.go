@@ -149,7 +149,7 @@ func TestSnippets(t *testing.T){
 
 		testFileContinuity(t, file, tree)
 
-		yml, err := ioutil.ReadFile(file + ".yml")
+		yml, err := ioutil.ReadFile(strings.TrimSuffix(file, ".php") + ".yml")
 		if err == nil {
 			var good ast.File
 			err = yaml.Unmarshal(yml, &good)
