@@ -19,6 +19,7 @@ import (
 	"golang.org/x/text/encoding"
 	"io"
 	"os"
+	"strings"
 )
 
 var php int
@@ -99,6 +100,14 @@ func (c *convert) getNameList(ns []node.Node) string {
 	return name[1:]
 }
 
+func (c *convert) getContentList(ns []node.Node) string {
+	name := ""
+	for _, prop := range ns {
+		name = name + "," + c.getContent(prop)
+	}
+	return name[1:]
+}
+
 func (c *convert) getName(n node.Node) string {
 	switch v := n.(type) {
 	case *expr.ArrayDimFetch:
@@ -122,20 +131,26 @@ func (c *convert) getName(n node.Node) string {
 	case *stmt.Constant:
 		return c.getName(v.ConstantName)
 
+	case *stmt.Echo:
+		return c.getContentList(v.Exprs)
+
+	case *expr.Print:
+		return c.getContent(v.Expr)
+
 	case *stmt.Function:
 		return c.getName(v.FunctionName)
 
 	case *stmt.For:
-		return "" // FIXME concatinate v.Init v.Cond and v.Loop ???
+		return c.getContentList(v.Init) + "; " + c.getContentList(v.Cond) + "; " + c.getContentList(v.Loop)
 
 	case *stmt.Foreach:
-		return c.getContent(v.Variable)
+		return c.getContent(v.Expr) + " as " + c.getContent(v.Variable)
 
 	case *expr.FunctionCall:
 		return c.getName(v.Function)
 
 	case *expr.MethodCall:
-		return c.getName(v.Method)
+		return c.getContent(v.Variable) + "->" + c.getName(v.Method)
 
 	case *stmt.Global:
 		return c.getNameList(v.Vars)
@@ -215,6 +230,9 @@ func (c *convert) toNode(n node.Node) *ast.Node {
 	case *stmt.Echo:
 		r.Kind = "echo"
 
+	case *expr.Print:
+		r.Kind = "print"
+
 	case *expr.ErrorSuppress:
 		r = c.toNode(v.Expr)
 
@@ -268,7 +286,7 @@ func (c *convert) toNode(n node.Node) *ast.Node {
 		if debug {
 			fmt.Fprintf(os.Stderr, "%T\n", v)
 		}
-		return nil
+		r = nil
 	}
 
 	if r == nil {
@@ -301,6 +319,18 @@ func (c *convert) toFile(root node.Node) *ast.File {
 		if t != nil {
 			children = append(children, *t)
 		}
+	}
+
+	// insert the header if necessary
+	if len(c.buf.Bytes()) != 0 && children[0].Span[0] != 0 {
+		offset := strings.Index(c.buf.String(), "\n\n")
+		if offset < 0 || offset > children[0].Span[0] {
+			offset = children[0].Span[0] - 1
+		}
+		children = append([]ast.Node{{
+			Kind: "header",
+			Span: &[2]int{0, offset},
+		}}, children...)
 	}
 
 	return &ast.File{
