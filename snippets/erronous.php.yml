@@ -1,5 +1,5 @@
 type: file
-name: snippets/erronous.php
+name: erronous.php
 locationSpan: {start: [1, 0], end: [4, 3]}
 footerSpan: [48, 50]
 parsingErrorsDetected: true

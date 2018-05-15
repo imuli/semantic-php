@@ -1,5 +1,5 @@
 type: file
-name: snippets/print.php
+name: print.php
 locationSpan: {start: [1, 0], end: [3, 3]}
 footerSpan: [28, 30]
 parsingErrorsDetected: false

@@ -1,5 +1,5 @@
 type: file
-name: snippets/echo.php
+name: echo.php
 locationSpan: {start: [1, 0], end: [1, 30]}
 footerSpan: [30, 29]
 parsingErrorsDetected: false

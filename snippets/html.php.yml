@@ -1,5 +1,5 @@
 type: file
-name: snippets/html.php
+name: html.php
 locationSpan: {start: [1, 0], end: [6, 8]}
 footerSpan: [104, 103]
 parsingErrorsDetected: false

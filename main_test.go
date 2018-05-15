@@ -141,7 +141,7 @@ func TestSnippets(t *testing.T){
 	files, _ := filepath.Glob("snippets/*.php")
 	for _, file := range files {
 		src, _ := os.Open(file)
-		tree, err := Parse(src, file, encoding.Nop)
+		tree, err := Parse(src, file[9:], encoding.Nop)
 		src.Close()
 		if err != nil {
 			t.Errorf("got an error reading %s: %v", file, err)
@@ -154,7 +154,7 @@ func TestSnippets(t *testing.T){
 			var good ast.File
 			err = yaml.Unmarshal(yml, &good)
 			if err == nil {
-				testFileEquality(t, file, tree, good)
+				testFileEquality(t, strings.TrimSuffix(file[9:], ".php"), tree, good)
 			} else {
 				t.Errorf("bad yaml in %s.yml", file)
 			}

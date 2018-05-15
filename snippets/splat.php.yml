@@ -1,5 +1,5 @@
 type: file
-name: snippets/splat.php
+name: splat.php
 locationSpan: {start: [1, 0], end: [44, 1]}
 footerSpan: [522, 522]
 parsingErrorsDetected: false

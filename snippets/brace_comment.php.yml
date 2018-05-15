@@ -1,5 +1,5 @@
 type: file
-name: snippets/brace_comment.php
+name: brace_comment.php
 locationSpan: {start: [1, 0], end: [6, 2]}
 footerSpan: [82, 81]
 parsingErrorsDetected: false
