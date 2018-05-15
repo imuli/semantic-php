@@ -63,6 +63,9 @@ func (c *convert) decode(str string) string {
 
 func (c *convert) getContent(n node.Node) string {
 	pos := c.pos[n]
+	if pos == nil {
+		return ""
+	}
 	return c.decode(c.buf.String()[pos.StartPos-1 : pos.EndPos])
 }
 
@@ -110,6 +113,21 @@ func (c *convert) getContentList(ns []node.Node) string {
 
 func (c *convert) getName(n node.Node) string {
 	switch v := n.(type) {
+	case *stmt.AltIf:
+		return c.getContent(v.Cond)
+
+	case *stmt.AltFor:
+		return c.getContentList(v.Init) + "; " + c.getContentList(v.Cond) + "; " + c.getContentList(v.Loop)
+
+	case *stmt.AltForeach:
+		return c.getContent(v.Expr) + " as " + c.getContent(v.Variable)
+
+	case *stmt.AltSwitch:
+		return c.getContent(v.Cond)
+
+	case *stmt.AltWhile:
+		return c.getContent(v.Cond)
+
 	case *expr.ArrayDimFetch:
 		return c.getContent(n)
 
@@ -125,14 +143,26 @@ func (c *convert) getName(n node.Node) string {
 	case *stmt.ClassMethod:
 		return c.getName(v.MethodName)
 
+	case *assign.Concat:
+		return c.getName(v.Variable)
+
 	case *stmt.ConstList:
 		return c.getNameList(v.Consts)
 
 	case *stmt.Constant:
 		return c.getName(v.ConstantName)
 
+	case *expr.Die:
+		return c.getContent(v.Expr)
+
+	case *stmt.Do:
+		return c.getContent(v.Cond)
+
 	case *stmt.Echo:
 		return c.getContentList(v.Exprs)
+
+	case *expr.Exit:
+		return c.getContent(v.Expr)
 
 	case *expr.Print:
 		return c.getContent(v.Expr)
@@ -155,11 +185,26 @@ func (c *convert) getName(n node.Node) string {
 	case *stmt.Global:
 		return c.getNameList(v.Vars)
 
+	case *stmt.Goto:
+		return c.getName(v.Label)
+
 	case *stmt.If:
 		return c.getContent(v.Cond)
 
 	case *node.Identifier:
 		return c.decode(v.Value)
+
+	case *expr.Include:
+		return c.getContent(v.Expr)
+
+	case *expr.IncludeOnce:
+		return c.getContent(v.Expr)
+
+	case *stmt.Interface:
+		return c.getName(v.InterfaceName)
+
+	case *stmt.Label:
+		return c.getName(v.LabelName)
 
 	case *name.Name:
 		return c.getNameList(v.Parts)
@@ -182,6 +227,15 @@ func (c *convert) getName(n node.Node) string {
 	case *expr.RequireOnce:
 		return c.getContent(v.Expr)
 
+	case *expr.StaticCall:
+		return c.getContent(v.Class) + "::" + c.getName(v.Call)
+
+	case *stmt.Switch:
+		return c.getContent(v.Cond)
+
+	case *expr.Ternary:
+		return c.getContent(v.Condition)
+
 	case *stmt.Unset:
 		return c.getNameList(v.Vars)
 
@@ -193,6 +247,9 @@ func (c *convert) getName(n node.Node) string {
 
 	case *expr.Variable:
 		return c.getName(v.VarName)
+
+	case *stmt.While:
+		return c.getContent(v.Cond)
 
 	default:
 		return ""
@@ -208,6 +265,21 @@ func (c *convert) toNode(n node.Node) *ast.Node {
 	contained := []node.Node{} // containers set this for recursion
 
 	switch v := n.(type) {
+	case *stmt.AltIf:
+		r.Kind = "if"
+
+	case *stmt.AltFor:
+		r.Kind = "for"
+
+	case *stmt.AltForeach:
+		r.Kind = "foreach"
+
+	case *stmt.AltSwitch:
+		r.Kind = "switch"
+
+	case *stmt.AltWhile:
+		r.Kind = "while"
+
 	case *assign.Assign:
 		r.Kind = "assign"
 
@@ -221,8 +293,17 @@ func (c *convert) toNode(n node.Node) *ast.Node {
 	case *stmt.ClassMethod:
 		r.Kind = "method"
 
+	case *assign.Concat:
+		r.Kind = "concat"
+
 	case *stmt.ConstList:
 		r.Kind = "constant"
+
+	case *expr.Die:
+		r.Kind = "die"
+
+	case *stmt.Do:
+		r.Kind = "do"
 
 	case *stmt.Expression:
 		r = c.toNode(v.Expr)
@@ -230,8 +311,8 @@ func (c *convert) toNode(n node.Node) *ast.Node {
 	case *stmt.Echo:
 		r.Kind = "echo"
 
-	case *expr.Print:
-		r.Kind = "print"
+	case *expr.Exit:
+		r.Kind = "exit"
 
 	case *expr.ErrorSuppress:
 		r = c.toNode(v.Expr)
@@ -248,20 +329,39 @@ func (c *convert) toNode(n node.Node) *ast.Node {
 	case *expr.FunctionCall:
 		r.Kind = "call_function"
 
-	case *stmt.If:
-		r.Kind = "if"
-
 	case *stmt.Global:
 		r.Kind = "global"
 
+	case *stmt.Goto:
+		r.Kind = "goto"
+
+	case *stmt.If:
+		r.Kind = "if"
+
+	case *expr.Include:
+		r.Kind = "include"
+
+	case *expr.IncludeOnce:
+		r.Kind = "include_once"
+
 	case *stmt.InlineHtml:
 		r.Kind = "inline_text"
+
+	case *stmt.Interface:
+		r.Kind = "interface"
+		contained = v.Stmts
+
+	case *stmt.Label:
+		r.Kind = "label"
 
 	case *expr.MethodCall:
 		r.Kind = "call_method"
 
 	case *stmt.Namespace:
 		r.Kind = "namespace"
+
+	case *expr.Print:
+		r.Kind = "print"
 
 	case *stmt.PropertyList:
 		r.Kind = "properties"
@@ -276,11 +376,23 @@ func (c *convert) toNode(n node.Node) *ast.Node {
 		r.Kind = "statement_list"
 		contained = v.Stmts
 
+	case *stmt.Switch:
+		r.Kind = "switch"
+
+	case *expr.Ternary:
+		r.Kind = "ternary"
+
+	case *expr.StaticCall:
+		r.Kind = "call_static"
+
 	case *stmt.Unset:
 		r.Kind = "unset"
 
 	case *stmt.UseList:
 		r.Kind = "use"
+
+	case *stmt.While:
+		r.Kind = "while"
 
 	default:
 		if debug {
@@ -322,7 +434,7 @@ func (c *convert) toFile(root node.Node) *ast.File {
 	}
 
 	// insert the header if necessary
-	if len(c.buf.Bytes()) != 0 && children[0].Span[0] != 0 {
+	if len(c.buf.Bytes()) != 0 && len(children) != 0 && children[0].Span[0] != 0 {
 		offset := strings.Index(c.buf.String(), "\n\n")
 		if offset < 0 || offset > children[0].Span[0] {
 			offset = children[0].Span[0] - 1
@@ -351,6 +463,9 @@ func Parse(source io.Reader, name string, code encoding.Encoding) (ast.File, err
 	parse.Parse()
 	tree := parse.GetRootNode()
 	c.pos = parse.GetPositions()
+	if tree == nil {
+		return ast.File{}, errors.New("parser returned nil")
+	}
 
 	file := c.toFile(tree)
 	file.Name = name
