@@ -1,0 +1,70 @@
+type: file
+name: snippets/splat.php
+locationSpan: {start: [1, 0], end: [44, 1]}
+footerSpan: [522, 522]
+parsingErrorsDetected: false
+children:
+- type: header
+  name: ""
+  locationSpan: {start: [1, 0], end: [1, 6]}
+  span: [0, 5]
+- type: constant
+  name: NAME
+  locationSpan: {start: [2, 0], end: [3, 22]}
+  span: [6, 28]
+- type: require_once
+  name: '''header.php'''
+  locationSpan: {start: [4, 0], end: [5, 28]}
+  span: [29, 57]
+- type: require
+  name: '''functions.php'''
+  locationSpan: {start: [6, 0], end: [6, 26]}
+  span: [58, 83]
+- type: namespace
+  name: Something
+  locationSpan: {start: [7, 0], end: [9, 21]}
+  span: [84, 140]
+- type: use
+  name: Nothing
+  locationSpan: {start: [10, 0], end: [10, 13]}
+  span: [141, 153]
+- type: global
+  name: hello
+  locationSpan: {start: [11, 0], end: [13, 15]}
+  span: [154, 185]
+- type: assign
+  name: $hello[NAME]
+  locationSpan: {start: [14, 0], end: [15, 21]}
+  span: [186, 207]
+- type: if
+  name: $hello
+  locationSpan: {start: [16, 0], end: [22, 2]}
+  span: [208, 285]
+- type: function
+  name: func
+  locationSpan: {start: [23, 0], end: [26, 2]}
+  span: [286, 325]
+- type: assign
+  name: loc
+  locationSpan: {start: [27, 0], end: [29, 16]}
+  span: [326, 360]
+- type: assign
+  name: here
+  locationSpan: {start: [30, 0], end: [31, 16]}
+  span: [361, 397]
+- type: foreach
+  name: $loc as $l
+  locationSpan: {start: [32, 0], end: [35, 2]}
+  span: [398, 446]
+- type: for
+  name: $i = 0; $i < 10; $i++
+  locationSpan: {start: [36, 0], end: [39, 2]}
+  span: [447, 487]
+- type: call_method
+  name: $here->where
+  locationSpan: {start: [40, 0], end: [41, 16]}
+  span: [488, 504]
+- type: call_function
+  name: print_footer
+  locationSpan: {start: [42, 0], end: [43, 16]}
+  span: [505, 521]

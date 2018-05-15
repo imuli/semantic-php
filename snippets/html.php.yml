@@ -1,0 +1,18 @@
+type: file
+name: snippets/html.php
+locationSpan: {start: [1, 0], end: [6, 8]}
+footerSpan: [104, 103]
+parsingErrorsDetected: false
+children:
+- type: inline_text
+  name: ""
+  locationSpan: {start: [1, 0], end: [4, 11]}
+  span: [0, 57]
+- type: echo
+  name: '"Hello World!"'
+  locationSpan: {start: [4, 11], end: [4, 35]}
+  span: [58, 81]
+- type: inline_text
+  name: ""
+  locationSpan: {start: [4, 35], end: [6, 8]}
+  span: [82, 103]
