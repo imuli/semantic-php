@@ -1,14 +1,14 @@
 type: file
 name: print.php
-locationSpan: {start: [1, 0], end: [3, 3]}
+locationSpan: {start: [1, 1], end: [3, 3]}
 footerSpan: [28, 30]
 parsingErrorsDetected: false
 children:
 - type: header
   name: ""
-  locationSpan: {start: [1, 0], end: [1, 6]}
+  locationSpan: {start: [1, 1], end: [1, 6]}
   span: [0, 5]
 - type: print
   name: '"Hello World!"'
-  locationSpan: {start: [2, 0], end: [2, 22]}
+  locationSpan: {start: [2, 1], end: [2, 22]}
   span: [6, 27]

@@ -1,6 +1,6 @@
 type: file
 name: empty.php
-locationSpan: {start: [2, 0], end: [1, 0]}
+locationSpan: {start: [1, 1], end: [1, 0]}
 footerSpan: [0, -1]
 parsingErrorsDetected: false
 children: []

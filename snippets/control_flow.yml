@@ -1,58 +1,58 @@
 type: file
 name: control_flow.php
-locationSpan: {start: [1, 0], end: [53, 34]}
+locationSpan: {start: [1, 1], end: [53, 34]}
 footerSpan: [552, 551]
 parsingErrorsDetected: false
 children:
 - type: header
   name: ""
-  locationSpan: {start: [1, 0], end: [1, 6]}
+  locationSpan: {start: [1, 1], end: [1, 6]}
   span: [0, 5]
 - type: if
   name: $hello
-  locationSpan: {start: [2, 0], end: [7, 2]}
+  locationSpan: {start: [2, 1], end: [7, 2]}
   span: [6, 67]
 - type: foreach
   name: $loc as $l
-  locationSpan: {start: [8, 0], end: [11, 2]}
+  locationSpan: {start: [8, 1], end: [11, 2]}
   span: [68, 116]
 - type: for
   name: $i = 0; $i < 10; $i++
-  locationSpan: {start: [12, 0], end: [15, 2]}
+  locationSpan: {start: [12, 1], end: [15, 2]}
   span: [117, 157]
 - type: while
   name: "false"
-  locationSpan: {start: [16, 0], end: [19, 2]}
+  locationSpan: {start: [16, 1], end: [19, 2]}
   span: [158, 199]
 - type: do
   name: "false"
-  locationSpan: {start: [20, 0], end: [23, 16]}
+  locationSpan: {start: [20, 1], end: [23, 16]}
   span: [200, 235]
 - type: switch
   name: $x
-  locationSpan: {start: [24, 0], end: [29, 2]}
+  locationSpan: {start: [24, 1], end: [29, 2]}
   span: [236, 285]
 - type: if
   name: $ut
-  locationSpan: {start: [30, 0], end: [33, 7]}
+  locationSpan: {start: [30, 1], end: [33, 7]}
   span: [286, 313]
 - type: for
   name: $i = 0; $i < 10; $i++
-  locationSpan: {start: [34, 0], end: [37, 8]}
+  locationSpan: {start: [34, 1], end: [37, 8]}
   span: [314, 365]
 - type: switch
   name: $x
-  locationSpan: {start: [38, 0], end: [43, 11]}
+  locationSpan: {start: [38, 1], end: [43, 11]}
   span: [366, 424]
 - type: foreach
   name: $loc as $alt
-  locationSpan: {start: [44, 0], end: [47, 12]}
+  locationSpan: {start: [44, 1], end: [47, 12]}
   span: [425, 469]
 - type: while
   name: "false"
-  locationSpan: {start: [48, 0], end: [51, 10]}
+  locationSpan: {start: [48, 1], end: [51, 10]}
   span: [470, 516]
 - type: ternary
   name: $seriously
-  locationSpan: {start: [52, 0], end: [53, 34]}
+  locationSpan: {start: [52, 1], end: [53, 34]}
   span: [517, 551]

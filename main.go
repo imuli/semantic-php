@@ -16,7 +16,6 @@ import (
 	"github.com/z7zmey/php-parser/php5"
 	"github.com/z7zmey/php-parser/php7"
 	"github.com/z7zmey/php-parser/position"
-	"golang.org/x/text/encoding"
 	"io"
 	"os"
 	"strings"
@@ -45,7 +44,6 @@ type convert struct {
 	buf     bytes.Buffer
 	pos     position.Positions
 	lines   []int // offsets of lines
-	decoder *encoding.Decoder
 }
 
 func (c *convert) toSpan(n node.Node) *[2]int {
@@ -53,20 +51,12 @@ func (c *convert) toSpan(n node.Node) *[2]int {
 	return &[2]int{pos.StartPos - 1, pos.EndPos - 1}
 }
 
-func (c *convert) decode(str string) string {
-	utf, err := c.decoder.String(str)
-	if err != nil {
-		return str
-	}
-	return utf
-}
-
 func (c *convert) getContent(n node.Node) string {
 	pos := c.pos[n]
 	if pos == nil {
 		return ""
 	}
-	return c.decode(c.buf.String()[pos.StartPos-1 : pos.EndPos])
+	return c.buf.String()[pos.StartPos-1 : pos.EndPos]
 }
 
 func (c *convert) seek(it byte, start, stop int) int {
@@ -192,7 +182,7 @@ func (c *convert) getName(n node.Node) string {
 		return c.getContent(v.Cond)
 
 	case *node.Identifier:
-		return c.decode(v.Value)
+		return v.Value
 
 	case *expr.Include:
 		return c.getContent(v.Expr)
@@ -210,7 +200,7 @@ func (c *convert) getName(n node.Node) string {
 		return c.getNameList(v.Parts)
 
 	case *name.NamePart:
-		return c.decode(v.Value)
+		return v.Value
 
 	case *stmt.Namespace:
 		return c.getContent(v.NamespaceName)
@@ -451,9 +441,8 @@ func (c *convert) toFile(root node.Node) *ast.File {
 	}
 }
 
-func Parse(source io.Reader, name string, code encoding.Encoding) (ast.File, error) {
+func Parse(source io.Reader, name string) (ast.File, error) {
 	c := convert{}
-	c.decoder = code.NewDecoder()
 	tee := io.TeeReader(source, &c.buf)
 	parse := newParser(tee, name)
 	if parse == nil {
@@ -470,22 +459,19 @@ func Parse(source io.Reader, name string, code encoding.Encoding) (ast.File, err
 	file := c.toFile(tree)
 	file.Name = name
 
-	lines := ast.MakeLines(c.buf.Bytes())
+	vitals := ast.MakeVitals(c.buf.Bytes())
 
 	parseErrors := parse.GetErrors()
 	file.ParsingErrorsDetected = len(parseErrors) > 0
 	// we can only use the first parsing error...
 	if file.ParsingErrorsDetected {
 		file.ParsingError = &ast.ParsingError{
-			Location: [2]int{
-				parseErrors[0].Pos.StartLine,
-				parseErrors[0].Pos.StartPos - lines[parseErrors[0].Pos.StartLine],
-			},
+			Location: vitals.LineChar(parseErrors[0].Pos.StartPos),
 			Message: parseErrors[0].Msg,
 		}
 	}
 
-	file = ast.CleanFile(file, lines)
+	file = vitals.CleanFile(file)
 
 	if file == nil {
 		return ast.File{}, errors.New("something didn't clean up properly")

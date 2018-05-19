@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/go-yaml/yaml"
 	"github.com/imuli/go-semantic/ast"
-	"golang.org/x/text/encoding"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -14,8 +13,8 @@ import (
 
 // helper functions for tests
 
-func parseEncoding(t *testing.T, source string, code encoding.Encoding) ast.File {
-	file, err := Parse(strings.NewReader(source), "testing", code)
+func parse(t *testing.T, source string) ast.File {
+	file, err := Parse(strings.NewReader(source), "testing")
 	if err != nil {
 		t.Errorf("got an error: %v", err)
 	}
@@ -26,10 +25,6 @@ func parseEncoding(t *testing.T, source string, code encoding.Encoding) ast.File
 		t.Errorf("file length was %d instead of %d", len(source), file.FooterSpan[1]+1)
 	}
 	return file
-}
-
-func parse(t *testing.T, source string) ast.File {
-	return parseEncoding(t, source, encoding.Nop)
 }
 
 func getSpan(source string, span *[2]int) string {
@@ -141,7 +136,7 @@ func TestSnippets(t *testing.T) {
 	files, _ := filepath.Glob("snippets/*.php")
 	for _, file := range files {
 		src, _ := os.Open(file)
-		tree, err := Parse(src, file[9:], encoding.Nop)
+		tree, err := Parse(src, file[9:])
 		src.Close()
 		if err != nil {
 			t.Errorf("got an error reading %s: %v", file, err)
