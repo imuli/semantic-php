@@ -41,9 +41,9 @@ func newParser(source io.Reader, name string) parser.Parser {
 }
 
 type convert struct {
-	buf     bytes.Buffer
-	pos     position.Positions
-	lines   []int // offsets of lines
+	buf   bytes.Buffer
+	pos   position.Positions
+	lines []int // offsets of lines
 }
 
 func (c *convert) toSpan(n node.Node) *[2]int {
@@ -59,24 +59,48 @@ func (c *convert) getContent(n node.Node) string {
 	return c.buf.String()[pos.StartPos-1 : pos.EndPos]
 }
 
+func skipComment(buf []byte, start int, end int) int {
+	if start+1 >= end {
+		return start
+	}
+	offset := 0
+	length := 0
+	switch true {
+	case buf[start] == '#':
+		offset = bytes.IndexByte(buf[start:end+1], byte('\n'))
+		length = 1
+	case buf[start] == '/' && buf[start+1] == '/':
+		offset = bytes.IndexByte(buf[start:end+1], byte('\n'))
+		length = 1
+	case buf[start] == '/' && buf[start+1] == '*':
+		offset = bytes.Index(buf[start:end+1], []byte("*/"))
+		length = 2
+	}
+	if offset == -1 {
+		return end
+	}
+	return start + offset + length
+}
+
 func (c *convert) seek(it byte, start, stop int) int {
 	buf := c.buf.Bytes()
-	var dir int
 	if start > stop {
-		dir = -1
-	} else {
-		dir = 1
+		tmp := stop
+		stop = start
+		start = tmp
 	}
 
 	// look for it
-	for i := start; i != stop; i += dir {
+	for i := start; i != stop; i++ {
+		i = skipComment(buf, i, stop)
 		if buf[i] == it {
 			return i + 1
 		}
 	}
 
 	// look for newline
-	for i := start; i != stop; i += dir {
+	for i := start; i != stop; i++ {
+		i = skipComment(buf, i, stop)
 		if buf[i] == '\n' {
 			return i + 1
 		}
@@ -467,7 +491,7 @@ func Parse(source io.Reader, name string) (ast.File, error) {
 	if file.ParsingErrorsDetected {
 		file.ParsingError = &ast.ParsingError{
 			Location: vitals.LineChar(parseErrors[0].Pos.StartPos),
-			Message: parseErrors[0].Msg,
+			Message:  parseErrors[0].Msg,
 		}
 	}
 
