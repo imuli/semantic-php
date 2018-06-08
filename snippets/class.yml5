@@ -1,0 +1,29 @@
+type: file
+name: class.php
+locationSpan: {start: [1, 1], end: [18, 15]}
+footerSpan: [308, 323]
+parsingErrorsDetected: false
+children:
+- type: header
+  name: ""
+  locationSpan: {start: [1, 1], end: [2, 15]}
+  span: [0, 20]
+- type: class
+  name: Foo
+  locationSpan: {start: [3, 1], end: [16, 25]}
+  span: [21, 307]
+  headerSpan: [21, 72]
+  footerSpan: [267, 307]
+  children:
+  - type: properties
+    name: bar
+    locationSpan: {start: [7, 1], end: [8, 37]}
+    span: [73, 126]
+  - type: method
+    name: getBar
+    locationSpan: {start: [9, 1], end: [12, 28]}
+    span: [127, 216]
+  - type: constant
+    name: QUUX
+    locationSpan: {start: [13, 1], end: [14, 22]}
+    span: [217, 266]

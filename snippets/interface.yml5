@@ -1,0 +1,21 @@
+type: file
+name: interface.php
+locationSpan: {start: [1, 1], end: [4, 2]}
+footerSpan: [55, 54]
+parsingErrorsDetected: false
+children:
+- type: header
+  name: ""
+  locationSpan: {start: [1, 1], end: [1, 6]}
+  span: [0, 5]
+- type: interface
+  name: Foo
+  locationSpan: {start: [2, 1], end: [4, 2]}
+  span: [6, 54]
+  headerSpan: [6, 21]
+  footerSpan: [53, 54]
+  children:
+  - type: method
+    name: Bar
+    locationSpan: {start: [3, 1], end: [3, 31]}
+    span: [22, 52]

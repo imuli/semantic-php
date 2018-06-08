@@ -132,7 +132,34 @@ func testFileEquality(t *testing.T, prefix string, left ast.File, right ast.File
 
 // Tests start here
 
-func TestSnippets(t *testing.T) {
+func TestSnippets5(t *testing.T) {
+	php = 5
+	files, _ := filepath.Glob("snippets/*.php")
+	for _, file := range files {
+		src, _ := os.Open(file)
+		tree, err := Parse(src, file[9:])
+		src.Close()
+		if err != nil {
+			t.Errorf("got an error reading %s: %v", file, err)
+		}
+
+		testFileContinuity(t, file, tree)
+
+		yml, err := ioutil.ReadFile(strings.TrimSuffix(file, ".php") + ".yml5")
+		if err == nil {
+			var good ast.File
+			err = yaml.Unmarshal(yml, &good)
+			if err == nil {
+				testFileEquality(t, strings.TrimSuffix(file[9:], ".php"), tree, good)
+			} else {
+				t.Errorf("bad yaml in %s.yml", file)
+			}
+		}
+	}
+}
+
+func TestSnippets7(t *testing.T) {
+	php = 7
 	files, _ := filepath.Glob("snippets/*.php")
 	for _, file := range files {
 		src, _ := os.Open(file)

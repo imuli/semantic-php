@@ -1,0 +1,38 @@
+type: file
+name: assign_const.php
+locationSpan: {start: [1, 1], end: [10, 16]}
+footerSpan: [167, 166]
+parsingErrorsDetected: false
+children:
+- type: header
+  name: ""
+  locationSpan: {start: [1, 1], end: [1, 6]}
+  span: [0, 5]
+- type: constant
+  name: NAME
+  locationSpan: {start: [2, 1], end: [2, 22]}
+  span: [6, 27]
+- type: global
+  name: hello
+  locationSpan: {start: [3, 1], end: [3, 15]}
+  span: [28, 42]
+- type: assign
+  name: $hello[NAME]
+  locationSpan: {start: [4, 1], end: [4, 21]}
+  span: [43, 63]
+- type: assign
+  name: ut
+  locationSpan: {start: [5, 1], end: [5, 15]}
+  span: [64, 78]
+- type: concat
+  name: ut
+  locationSpan: {start: [6, 1], end: [6, 17]}
+  span: [79, 95]
+- type: assign
+  name: loc
+  locationSpan: {start: [7, 1], end: [8, 16]}
+  span: [96, 129]
+- type: assign
+  name: here
+  locationSpan: {start: [9, 1], end: [10, 16]}
+  span: [130, 166]

@@ -1,0 +1,17 @@
+type: file
+name: erronous.php
+locationSpan: {start: [1, 1], end: [4, 3]}
+footerSpan: [48, 50]
+parsingErrorsDetected: true
+children:
+- type: header
+  name: ""
+  locationSpan: {start: [1, 1], end: [2, 20]}
+  span: [0, 25]
+- type: assign
+  name: "y"
+  locationSpan: {start: [3, 1], end: [3, 22]}
+  span: [26, 47]
+parsingError:
+  location: [3, 1]
+  message: 'syntax error: unexpected T_VARIABLE'
