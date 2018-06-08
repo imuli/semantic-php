@@ -15,7 +15,6 @@ import (
 	"github.com/z7zmey/php-parser/parser"
 	"github.com/z7zmey/php-parser/php5"
 	"github.com/z7zmey/php-parser/php7"
-	"github.com/z7zmey/php-parser/position"
 	"io"
 	"os"
 	"strings"
@@ -42,7 +41,7 @@ func newParser(source io.Reader, name string) parser.Parser {
 
 type convert struct {
 	buf   bytes.Buffer
-	pos   position.Positions
+	pos   parser.Positions
 	lines []int // offsets of lines
 }
 
@@ -433,7 +432,7 @@ func (c *convert) toNode(n node.Node) *ast.Node {
 }
 
 func (c *convert) toFile(root node.Node) *ast.File {
-	v := root.(*stmt.StmtList)
+	v := root.(*node.Root)
 
 	children := []ast.Node{}
 	for _, stmt := range v.Stmts {
