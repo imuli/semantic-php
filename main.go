@@ -386,10 +386,6 @@ func (c *convert) toNode(n node.Node) *ast.Node {
 	case *expr.RequireOnce:
 		r.Kind = "require_once"
 
-	case *stmt.StmtList:
-		r.Kind = "statement_list"
-		contained = v.Stmts
-
 	case *stmt.Switch:
 		r.Kind = "switch"
 
