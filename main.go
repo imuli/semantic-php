@@ -40,8 +40,8 @@ func newParser(source io.Reader, name string) parser.Parser {
 }
 
 type convert struct {
-	buf   bytes.Buffer
-	pos   parser.Positions
+	buf *bytes.Buffer
+	pos parser.Positions
 }
 
 func (c *convert) toSpan(n node.Node) *[2]int {
@@ -460,43 +460,36 @@ func (c *convert) toFile(root node.Node) *ast.File {
 	}
 }
 
-func Parse(source io.Reader, name string) (ast.File, error) {
+func Parse(source []byte, name string) (*ast.File, error) {
 	c := convert{}
-	tee := io.TeeReader(source, &c.buf)
-	parse := newParser(tee, name)
+	c.buf = bytes.NewBuffer(source)
+	parse := newParser(bytes.NewReader(source), name)
 	if parse == nil {
-		return ast.File{}, errors.New("invalid php version")
+		return nil, errors.New("invalid php version")
 	}
 
 	parse.Parse()
 	tree := parse.GetRootNode()
 	c.pos = parse.GetPositions()
 	if tree == nil {
-		return ast.File{}, errors.New("parser returned nil")
+		return nil, errors.New("parser returned nil")
 	}
 
 	file := c.toFile(tree)
 	file.Name = name
-
-	vitals := ast.MakeVitals(c.buf.Bytes())
+	file.Numbering = ast.NumberingBytes
 
 	parseErrors := parse.GetErrors()
 	file.ParsingErrorsDetected = len(parseErrors) > 0
 	// we can only use the first parsing error...
 	if file.ParsingErrorsDetected {
 		file.ParsingError = &ast.ParsingError{
-			Location: vitals.LineChar(parseErrors[0].Pos.StartPos),
+			Position: parseErrors[0].Pos.StartPos,
 			Message:  parseErrors[0].Msg,
 		}
 	}
 
-	file = vitals.CleanFile(file)
-
-	if file == nil {
-		return ast.File{}, errors.New("something didn't clean up properly")
-	}
-
-	return *file, nil
+	return file, nil
 }
 
 func main() {

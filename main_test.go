@@ -5,7 +5,6 @@ import (
 	"github.com/go-yaml/yaml"
 	"github.com/imuli/go-semantic/ast"
 	"io/ioutil"
-	"os"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -13,16 +12,18 @@ import (
 
 // helper functions for tests
 
-func parse(t *testing.T, source string) ast.File {
-	file, err := Parse(strings.NewReader(source), "testing")
+func parse(t *testing.T, source string) *ast.File {
+	file, err := Parse([]byte(source), "testing")
 	if err != nil {
 		t.Errorf("got an error: %v", err)
 	}
+	vitals := ast.MakeVitals([]byte(source))
+	file = vitals.CleanFile(file)
 	if file.Name != "testing" {
 		t.Errorf("name was '%s' instead of 'testing'", file.Name)
 	}
-	if file.FooterSpan[1]+1 != len(source) {
-		t.Errorf("file length was %d instead of %d", len(source), file.FooterSpan[1]+1)
+	if file.FooterSpan[1]+1 != vitals.GetChar(len(source)) {
+		t.Errorf("file length was %d instead of %d", vitals.GetChar(len(source)), file.FooterSpan[1]+1)
 	}
 	return file
 }
@@ -57,7 +58,7 @@ func testNodeContinuity(t *testing.T, prefix string, n ast.Node, pos int) {
 	}
 }
 
-func testFileContinuity(t *testing.T, prefix string, n ast.File) {
+func testFileContinuity(t *testing.T, prefix string, n *ast.File) {
 	pos := -1
 	for i, child := range n.Children {
 		childPrefix := fmt.Sprintf("%s.Children[%d]", prefix, i)
@@ -136,12 +137,14 @@ func TestSnippets5(t *testing.T) {
 	php = 5
 	files, _ := filepath.Glob("snippets/*.php")
 	for _, file := range files {
-		src, _ := os.Open(file)
+		src, _ := ioutil.ReadFile(file)
 		tree, err := Parse(src, file[9:])
-		src.Close()
 		if err != nil {
 			t.Errorf("got an error reading %s: %v", file, err)
 		}
+
+		vitals := ast.MakeVitals(src)
+		tree = vitals.CleanFile(tree)
 
 		testFileContinuity(t, file, tree)
 
@@ -150,7 +153,7 @@ func TestSnippets5(t *testing.T) {
 			var good ast.File
 			err = yaml.Unmarshal(yml, &good)
 			if err == nil {
-				testFileEquality(t, strings.TrimSuffix(file[9:], ".php"), tree, good)
+				testFileEquality(t, strings.TrimSuffix(file[9:], ".php"), *tree, good)
 			} else {
 				t.Errorf("bad yaml in %s.yml", file)
 			}
@@ -162,12 +165,14 @@ func TestSnippets7(t *testing.T) {
 	php = 7
 	files, _ := filepath.Glob("snippets/*.php")
 	for _, file := range files {
-		src, _ := os.Open(file)
+		src, _ := ioutil.ReadFile(file)
 		tree, err := Parse(src, file[9:])
-		src.Close()
 		if err != nil {
 			t.Errorf("got an error reading %s: %v", file, err)
 		}
+
+		vitals := ast.MakeVitals(src)
+		tree = vitals.CleanFile(tree)
 
 		testFileContinuity(t, file, tree)
 
@@ -176,7 +181,7 @@ func TestSnippets7(t *testing.T) {
 			var good ast.File
 			err = yaml.Unmarshal(yml, &good)
 			if err == nil {
-				testFileEquality(t, strings.TrimSuffix(file[9:], ".php"), tree, good)
+				testFileEquality(t, strings.TrimSuffix(file[9:], ".php"), *tree, good)
 			} else {
 				t.Errorf("bad yaml in %s.yml", file)
 			}
