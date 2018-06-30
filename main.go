@@ -42,7 +42,6 @@ func newParser(source io.Reader, name string) parser.Parser {
 type convert struct {
 	buf   bytes.Buffer
 	pos   parser.Positions
-	lines []int // offsets of lines
 }
 
 func (c *convert) toSpan(n node.Node) *[2]int {
@@ -58,6 +57,7 @@ func (c *convert) getContent(n node.Node) string {
 	return c.buf.String()[pos.StartPos-1 : pos.EndPos]
 }
 
+// helper function for seek
 func skipComment(buf []byte, start int, end int) int {
 	if start+1 >= end {
 		return start
