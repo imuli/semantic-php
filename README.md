@@ -36,7 +36,13 @@ go get github.com/imuli/semantic-php
 
 will install `semantic-php.exe` into your Go binary path above.
 
+You can update at any time with:
+
+```
+go get -u github.com/imuli/semantic-php
+```
+
 ## Binaries
 
-...will be released soon.
+Binaries may be found [under releases](https://github.com/imuli/semantic-php/releases).
 
