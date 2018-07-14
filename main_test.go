@@ -141,6 +141,7 @@ func TestSnippets5(t *testing.T) {
 		tree, err := Parse(src, file[9:])
 		if err != nil {
 			t.Errorf("got an error reading %s: %v", file, err)
+			continue
 		}
 
 		vitals := ast.MakeVitals(src)
@@ -169,6 +170,7 @@ func TestSnippets7(t *testing.T) {
 		tree, err := Parse(src, file[9:])
 		if err != nil {
 			t.Errorf("got an error reading %s: %v", file, err)
+			continue
 		}
 
 		vitals := ast.MakeVitals(src)
