@@ -1,0 +1,14 @@
+type: file
+name: byte-order-mark.php
+locationSpan: {start: [1, 1], end: [2, 7]}
+footerSpan: [100, 106]
+parsingErrorsDetected: false
+children:
+- type: header
+  name: ""
+  locationSpan: {start: [1, 1], end: [1, 1]}
+  span: [0, 0]
+- type: inline_text
+  name: ""
+  locationSpan: {start: [1, 2], end: [1, 100]}
+  span: [1, 99]
