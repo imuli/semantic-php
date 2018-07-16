@@ -121,7 +121,11 @@ func (c *convert) getContentList(ns []node.Node) string {
 	for _, prop := range ns {
 		name = name + "," + c.getContent(prop)
 	}
-	return name[1:]
+	if len(name) > 0 {
+		return name[1:]
+	} else {
+		return ""
+	}
 }
 
 func (c *convert) getName(n node.Node) string {
