@@ -1,0 +1,10 @@
+type: file
+name: plane_15.php
+locationSpan: {start: [1, 1], end: [1, 10]}
+footerSpan: [10, 9]
+parsingErrorsDetected: false
+children:
+- type: inline_text
+  name: ""
+  locationSpan: {start: [1, 1], end: [1, 10]}
+  span: [0, 9]
