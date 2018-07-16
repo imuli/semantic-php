@@ -1,0 +1,28 @@
+type: file
+name: namespace.php
+locationSpan: {start: [1, 1], end: [8, 2]}
+footerSpan: [73, 72]
+parsingErrorsDetected: false
+children:
+- type: header
+  name: ""
+  locationSpan: {start: [1, 1], end: [1, 6]}
+  span: [0, 5]
+- type: namespace
+  name: Foo
+  locationSpan: {start: [2, 1], end: [8, 2]}
+  span: [6, 72]
+  headerSpan: [6, 21]
+  footerSpan: [71, 72]
+  children:
+  - type: class
+    name: Bar
+    locationSpan: {start: [3, 1], end: [7, 2]}
+    span: [22, 70]
+    headerSpan: [22, 33]
+    footerSpan: [69, 70]
+    children:
+    - type: method
+      name: baz
+      locationSpan: {start: [4, 1], end: [6, 3]}
+      span: [34, 68]
