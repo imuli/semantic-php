@@ -352,6 +352,9 @@ func (c *convert) toNode(n node.Node) *ast.Node {
 	case *stmt.Goto:
 		r.Kind = "goto"
 
+	case *stmt.HaltCompiler:
+		r.Kind = "halt_compiler"
+
 	case *stmt.If:
 		r.Kind = "if"
 
