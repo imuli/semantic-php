@@ -197,3 +197,23 @@ func TestEmpty(t *testing.T) {
 		t.Errorf("empty file with %d children", len(file.Children))
 	}
 }
+
+func TestBulk(t *testing.T) {
+	files, _ := filepath.Glob("bulk/*.php")
+	for _, file := range files {
+		src, _ := ioutil.ReadFile(file)
+		for _, version := range []int{5, 7} {
+			php = version
+			tree, err := Parse(src, file[9:])
+			if err != nil {
+				t.Errorf("got an error reading %s: %v", file, err)
+				continue
+			}
+
+			vitals := ast.MakeVitals(src)
+			tree = vitals.CleanFile(tree)
+
+			testFileContinuity(t, file, tree)
+		}
+	}
+}
