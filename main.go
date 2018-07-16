@@ -372,6 +372,7 @@ func (c *convert) toNode(n node.Node) *ast.Node {
 
 	case *stmt.Namespace:
 		r.Kind = "namespace"
+		contained = v.Stmts
 
 	case *expr.Print:
 		r.Kind = "print"
