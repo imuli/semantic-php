@@ -477,17 +477,21 @@ func Parse(source []byte, name string) (*ast.File, error) {
 	}
 
 	parse.Parse()
+	parseErrors := parse.GetErrors()
 	tree := parse.GetRootNode()
 	c.pos = parse.GetPositions()
+	var file *ast.File
 	if tree == nil {
-		return nil, errors.New("parser returned nil")
+		if len(parseErrors) == 0 {
+			return nil, errors.New("parser returned nil with no parse errors")
+		}
+		file = &ast.File{Kind: "file"}
+	} else {
+		file = c.toFile(tree)
 	}
-
-	file := c.toFile(tree)
 	file.Name = name
 	file.Numbering = ast.NumberingBytes
 
-	parseErrors := parse.GetErrors()
 	file.ParsingErrorsDetected = len(parseErrors) > 0
 	// we can only use the first parsing error...
 	if file.ParsingErrorsDetected {
