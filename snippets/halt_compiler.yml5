@@ -1,0 +1,14 @@
+type: file
+name: halt_compiler.php
+locationSpan: {start: [1, 1], end: [3, 23]}
+footerSpan: [25, 47]
+parsingErrorsDetected: false
+children:
+- type: header
+  name: ""
+  locationSpan: {start: [1, 1], end: [1, 6]}
+  span: [0, 5]
+- type: halt_compiler
+  name: ""
+  locationSpan: {start: [2, 1], end: [2, 19]}
+  span: [6, 24]
