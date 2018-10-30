@@ -5,6 +5,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"github.com/cznic/golex/lex"
 	"github.com/imuli/go-semantic/api"
 	"github.com/imuli/go-semantic/ast"
 	"github.com/z7zmey/php-parser/node"
@@ -15,6 +16,7 @@ import (
 	"github.com/z7zmey/php-parser/parser"
 	"github.com/z7zmey/php-parser/php5"
 	"github.com/z7zmey/php-parser/php7"
+	"go/token"
 	"io"
 	"os"
 	"strings"
@@ -28,12 +30,22 @@ func init() {
 	flag.BoolVar(&debug, "debug", false, "log extra parse info to stderr")
 }
 
+func ignoreErrors(token.Pos, string) {}
+
 func newParser(source io.Reader, name string) parser.Parser {
 	switch php {
 	case 5:
-		return php5.NewParser(source, name)
+		p := php5.NewParser(source, name)
+		if !debug {
+			lex.ErrorFunc(ignoreErrors)(p.Lexer.Lexer)
+		}
+		return p
 	case 7:
-		return php7.NewParser(source, name)
+		p := php7.NewParser(source, name)
+		if !debug {
+			lex.ErrorFunc(ignoreErrors)(p.Lexer.Lexer)
+		}
+		return p
 	default:
 		return nil
 	}
