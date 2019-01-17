@@ -10,9 +10,9 @@ children:
   span: [0, 12]
 - type: echo
   name: "\"\U0001F648\U0001F649\U0001F64A\""
-  locationSpan: {start: [2, 1], end: [2, 24]}
-  span: [13, 36]
+  locationSpan: {start: [2, 1], end: [2, 21]}
+  span: [13, 33]
 - type: inline_text
   name: ""
-  locationSpan: {start: [3, 1], end: [3, 13]}
-  span: [37, 49]
+  locationSpan: {start: [2, 22], end: [3, 13]}
+  span: [34, 49]

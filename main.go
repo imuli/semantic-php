@@ -120,6 +120,15 @@ func (c *convert) seek(it byte, start, stop int) int {
 	return stop
 }
 
+// return the offset before the passed string
+func (c *convert) prevIndex(match string, pos int) int {
+	off := bytes.LastIndex(c.buf.Bytes()[0:pos], []byte(match))
+	if off != -1 {
+		return off
+	}
+	return pos
+}
+
 func (c *convert) getNameList(ns []node.Node) string {
 	name := ""
 	for _, prop := range ns {
@@ -387,6 +396,7 @@ func (c *convert) toNode(n node.Node) *ast.Node {
 
 	case *stmt.InlineHtml:
 		r.Kind = "inline_text"
+		r.Span[0] = c.prevIndex("?>", r.Span[0])
 
 	case *stmt.Interface:
 		r.Kind = "interface"

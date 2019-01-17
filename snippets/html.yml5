@@ -10,9 +10,9 @@ children:
   span: [0, 57]
 - type: echo
   name: '"Hello World!"'
-  locationSpan: {start: [4, 12], end: [4, 35]}
-  span: [58, 81]
+  locationSpan: {start: [4, 12], end: [4, 32]}
+  span: [58, 78]
 - type: inline_text
   name: ""
-  locationSpan: {start: [4, 36], end: [6, 8]}
-  span: [82, 103]
+  locationSpan: {start: [4, 33], end: [6, 8]}
+  span: [79, 103]
