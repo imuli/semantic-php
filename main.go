@@ -414,14 +414,14 @@ func (c *convert) toNode(n node.Node) *ast.Node {
 	case *expr.RequireOnce:
 		r.Kind = "require_once"
 
+	case *expr.StaticCall:
+		r.Kind = "call_static"
+
 	case *stmt.Switch:
 		r.Kind = "switch"
 
 	case *expr.Ternary:
 		r.Kind = "ternary"
-
-	case *expr.StaticCall:
-		r.Kind = "call_static"
 
 	case *stmt.Try:
 		r.Kind = "try"
