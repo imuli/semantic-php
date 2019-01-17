@@ -1,0 +1,21 @@
+type: file
+name: try-catch.php
+locationSpan: {start: [1, 1], end: [7, 4]}
+footerSpan: [118, 121]
+parsingErrorsDetected: false
+children:
+- type: header
+  name: ""
+  locationSpan: {start: [1, 1], end: [2, 3]}
+  span: [0, 9]
+- type: try
+  name: ""
+  locationSpan: {start: [2, 4], end: [6, 6]}
+  span: [10, 117]
+  headerSpan: [10, 16]
+  footerSpan: [116, 117]
+  children:
+  - type: catch
+    name: Exception
+    locationSpan: {start: [3, 1], end: [6, 4]}
+    span: [17, 115]

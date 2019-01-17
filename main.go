@@ -163,6 +163,9 @@ func (c *convert) getName(n node.Node) string {
 	case *assign.Assign:
 		return c.getName(v.Variable)
 
+	case *stmt.Catch:
+		return c.getContentList(v.Types)
+
 	case *stmt.Class:
 		return c.getName(v.ClassName)
 
@@ -312,6 +315,9 @@ func (c *convert) toNode(n node.Node) *ast.Node {
 	case *assign.Assign:
 		r.Kind = "assign"
 
+	case *stmt.Catch:
+		r.Kind = "catch"
+
 	case *stmt.Class:
 		r.Kind = "class"
 		contained = v.Stmts
@@ -345,6 +351,9 @@ func (c *convert) toNode(n node.Node) *ast.Node {
 
 	case *expr.ErrorSuppress:
 		r = c.toNode(v.Expr)
+
+	case *stmt.Finally:
+		r.Kind = "finally"
 
 	case *stmt.Foreach:
 		r.Kind = "foreach"
@@ -414,6 +423,10 @@ func (c *convert) toNode(n node.Node) *ast.Node {
 	case *expr.StaticCall:
 		r.Kind = "call_static"
 
+	case *stmt.Try:
+		r.Kind = "try"
+		contained = append(v.Catches, v.Finally)
+
 	case *stmt.Unset:
 		r.Kind = "unset"
 
@@ -435,6 +448,9 @@ func (c *convert) toNode(n node.Node) *ast.Node {
 	}
 
 	for _, stmt := range contained {
+		if stmt == nil {
+			continue
+		}
 		t := c.toNode(stmt)
 		if t != nil {
 			r.Children = append(r.Children, *t)
