@@ -13,5 +13,5 @@ children:
   locationSpan: {start: [3, 1], end: [3, 22]}
   span: [26, 47]
 parsingError:
-  location: [3, 1]
+- location: [3, 2]
   message: 'syntax error: unexpected T_VARIABLE'

@@ -529,12 +529,11 @@ func Parse(source []byte, name string) (*ast.File, error) {
 	file.Numbering = ast.NumberingBytes
 
 	file.ParsingErrorsDetected = len(parseErrors) > 0
-	// we can only use the first parsing error...
-	if file.ParsingErrorsDetected {
-		file.ParsingError = &ast.ParsingError{
-			Position: parseErrors[0].Pos.StartPos,
-			Message:  parseErrors[0].Msg,
-		}
+	for _, parseError := range parseErrors {
+		file.ParsingError = append(file.ParsingError, ast.ParsingError{
+			Position: parseError.Pos.StartPos,
+			Message:  parseError.Msg,
+		})
 	}
 
 	return file, nil
