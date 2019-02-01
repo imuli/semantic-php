@@ -10,12 +10,9 @@ children:
   span: [0, 9]
 - type: try
   name: ""
-  locationSpan: {start: [2, 4], end: [6, 6]}
-  span: [10, 117]
-  headerSpan: [10, 16]
-  footerSpan: [116, 117]
-  children:
-  - type: catch
-    name: Exception
-    locationSpan: {start: [3, 1], end: [6, 4]}
-    span: [17, 115]
+  locationSpan: {start: [2, 4], end: [4, 5]}
+  span: [10, 57]
+- type: catch
+  name: Exception
+  locationSpan: {start: [4, 6], end: [6, 6]}
+  span: [58, 117]

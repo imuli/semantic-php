@@ -10,16 +10,13 @@ children:
   span: [0, 9]
 - type: try
   name: ""
-  locationSpan: {start: [2, 4], end: [8, 5]}
-  span: [10, 148]
-  headerSpan: [10, 16]
-  footerSpan: [147, 148]
-  children:
-  - type: catch
-    name: Exception
-    locationSpan: {start: [3, 1], end: [6, 4]}
-    span: [17, 115]
-  - type: finally
-    name: ""
-    locationSpan: {start: [6, 5], end: [8, 3]}
-    span: [116, 146]
+  locationSpan: {start: [2, 4], end: [4, 5]}
+  span: [10, 57]
+- type: catch
+  name: Exception
+  locationSpan: {start: [4, 6], end: [6, 4]}
+  span: [58, 115]
+- type: finally
+  name: ""
+  locationSpan: {start: [6, 5], end: [8, 5]}
+  span: [116, 148]

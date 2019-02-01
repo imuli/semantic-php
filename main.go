@@ -297,13 +297,14 @@ func (c *convert) getName(n node.Node) string {
 	}
 }
 
-func (c *convert) toNode(n node.Node) *ast.Node {
+func (c *convert) toNodes(n node.Node) []ast.Node {
 
-	r := &ast.Node{
+	r := ast.Node{
 		Span: c.toSpan(n),
 		Name: c.getName(n),
 	}
 	contained := []node.Node{} // containers set this for recursion
+	siblings := []node.Node{}  // add contained nodes as siblings
 
 	switch v := n.(type) {
 	case *stmt.AltIf:
@@ -350,7 +351,7 @@ func (c *convert) toNode(n node.Node) *ast.Node {
 		r.Kind = "do"
 
 	case *stmt.Expression:
-		r = c.toNode(v.Expr)
+		return c.toNodes(v.Expr)
 
 	case *stmt.Echo:
 		r.Kind = "echo"
@@ -359,7 +360,7 @@ func (c *convert) toNode(n node.Node) *ast.Node {
 		r.Kind = "exit"
 
 	case *expr.ErrorSuppress:
-		r = c.toNode(v.Expr)
+		return c.toNodes(v.Expr)
 
 	case *stmt.Finally:
 		r.Kind = "finally"
@@ -435,7 +436,7 @@ func (c *convert) toNode(n node.Node) *ast.Node {
 
 	case *stmt.Try:
 		r.Kind = "try"
-		contained = append(v.Catches, v.Finally)
+		siblings = append(v.Catches, v.Finally)
 
 	case *stmt.Unset:
 		r.Kind = "unset"
@@ -450,21 +451,14 @@ func (c *convert) toNode(n node.Node) *ast.Node {
 		if debug {
 			fmt.Fprintf(os.Stderr, "%T\n", v)
 		}
-		r = nil
-	}
-
-	if r == nil {
-		return nil
+		return []ast.Node{}
 	}
 
 	for _, stmt := range contained {
 		if stmt == nil {
 			continue
 		}
-		t := c.toNode(stmt)
-		if t != nil {
-			r.Children = append(r.Children, *t)
-		}
+		r.Children = append(r.Children, c.toNodes(stmt)...)
 	}
 
 	if len(r.Children) > 0 {
@@ -474,7 +468,14 @@ func (c *convert) toNode(n node.Node) *ast.Node {
 		r.FooterSpan = &[2]int{c.seek('}', r.Span[1], r.Children[len(r.Children)-1].Span[1]+1), r.Span[1]}
 	}
 
-	return r
+	rs := []ast.Node{r}
+	for _, stmt := range siblings {
+		if stmt != nil {
+			rs = append(rs, c.toNodes(stmt)...)
+		}
+	}
+
+	return rs
 }
 
 func (c *convert) toFile(root node.Node) *ast.File {
@@ -482,10 +483,7 @@ func (c *convert) toFile(root node.Node) *ast.File {
 
 	children := []ast.Node{}
 	for _, stmt := range v.Stmts {
-		t := c.toNode(stmt)
-		if t != nil {
-			children = append(children, *t)
-		}
+		children = append(children, c.toNodes(stmt)...)
 	}
 
 	// insert the header if necessary
